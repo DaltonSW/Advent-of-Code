@@ -1,14 +1,14 @@
-import time
+import time, re
 
 
 def main():
     f = open('input.txt', 'r')
 
-    # parsing code here
+    words = f.readlines()
 
     f.close()
 
-    # remaining code here
+    print(len([s for s in words if (re.search(r'(..).*\1', s) and re.search(r'(.).\1', s))]))
 
 
 starttime = time.time()

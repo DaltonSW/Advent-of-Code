@@ -1,9 +1,10 @@
 import sys, os, traceback, shutil
 
 try:
-    day = sys.argv[1]
-    path = './{}'.format(day)
-    os.mkdir(path)
+    year = sys.argv[1]
+    day = sys.argv[2]
+    path = './{}/{}'.format(year, day)
+    os.makedirs(path)
     shutil.copy('./basefile.py', '{}/1.py'.format(path))
 
 except:
