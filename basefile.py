@@ -3,9 +3,8 @@ import time
 def main():
     f = open('input.txt', 'r')
 
-    # parsing code here
     for line in f.readlines():
-        print(line)
+        # parsing code here
 
     f.close()
 
