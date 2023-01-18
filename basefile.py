@@ -4,6 +4,8 @@ def main():
     f = open('input.txt', 'r')
 
     # parsing code here
+    for line in f.readlines():
+        print(line)
 
     f.close()
 
