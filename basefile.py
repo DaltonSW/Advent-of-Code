@@ -1,6 +1,5 @@
 import time
 
-
 def main():
     f = open('input.txt', 'r')
 
