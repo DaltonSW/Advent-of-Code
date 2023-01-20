@@ -51,9 +51,9 @@ class Directory:
 def main():
     cwd = []
 
-    # f = open('./2022/7/test.txt', 'r')
+    # f = open('./2022/7/test.txt.txt', 'r')
     f = open('input.txt', 'r')
-    # f = open('test.txt', 'r')
+    # f = open('test.txt.txt', 'r')
 
     f.readline()
     cwd.append(Directory("/"))
