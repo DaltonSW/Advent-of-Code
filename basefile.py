@@ -1,9 +1,11 @@
 import time
 
+
 def main():
     f = open('input.txt', 'r')
 
     for line in f.readlines():
+        print(line)
         # parsing code here
 
     f.close()
