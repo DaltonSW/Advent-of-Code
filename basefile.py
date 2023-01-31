@@ -1,16 +1,12 @@
 import time
+import aocd
+import os
 
 
 def main():
-    f = open('input.txt', 'r')
-
-    for line in f.readlines():
-        print(line)
-        # parsing code here
-
-    f.close()
-
-    # remaining code here
+    cwd = os.getcwd().split('\\')
+    data = aocd.get_data(None, int(cwd[-1]), int(cwd[-2]))
+    print(data)
 
 
 starttime = time.time()

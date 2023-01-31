@@ -1,4 +1,7 @@
-import sys, os, traceback, shutil
+import os
+import shutil
+import sys
+import traceback
 
 try:
     year = sys.argv[1]
@@ -7,6 +10,8 @@ try:
     os.makedirs(path)
     shutil.copy('./basefile.py', '{}/1.py'.format(path))
     shutil.copy('./basefile.py', '{}/2.py'.format(path))
+    os.chdir(path)
+
 
 except:
     print("Error!")
