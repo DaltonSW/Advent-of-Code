@@ -3,7 +3,7 @@ import aocd
 import os
 import sys
 import threading
-
+from collections import deque
 
 totalUnderFifty = 0
 
@@ -11,96 +11,100 @@ totalUnderFifty = 0
 def main():
     global totalUnderFifty
     matrix = []
-    for _ in range(60):
-        matrixRow = [0] * 60
+    for _ in range(100):
+        matrixRow = [0] * 100
         matrix.append(matrixRow)
 
     cwd = os.getcwd().split('\\')
     data = int(aocd.get_data(None, int(cwd[-1]), int(cwd[-2])))
     print(data)
 
-    for y in range(60):
-        for x in range(60):
+    for y in range(100):
+        for x in range(100):
             val = 1 if isOpenSpace(x, y, data) else 0
             matrix[y][x] = val
             print(val, end='')
         print()
 
     total = 0
-    for y in range(55):
-        for x in range(55):
-            print((x, y))
-            thread = threading.Thread(target=findShortestPathLength, args=(matrix, (x, y)))
-            thread.start()
+    for y in range(100):
+        print(f"Row {y} - {totalUnderFifty}")
+        for x in range(100):
+            # while threading.active_count() > 20:
+            #     pass
+            # thread = threading.Thread(target=findShortestPathLength, args=(matrix, (x, y)))
+            # thread.start()
+            dist = findShortestPathLength(matrix, (1, 1), (x, y))
+            if dist <= 50 and dist != -1:
+                totalUnderFifty += 1
 
     print(totalUnderFifty)
 
 
-def isSafe(matrix, visited, x, y):
-    return 0 <= x < len(matrix) and 0 <= y < len(matrix[0]) and \
-        not (matrix[x][y] == 0 or visited[x][y])
+# Below 2 functions are implemented from here -- https://www.techiedelight.com/lee-algorithm-shortest-path-in-a-maze/
+def isValid(matrix, visited, row, col):
+    return (row >= 0) and (row < len(matrix)) and (col >= 0) and (col < len(matrix[0])) \
+        and matrix[row][col] == 1 and not visited[row][col]
 
 
-# Find the shortest possible route in a matrix `mat` from source cell (i, j)
-# to destination cell `dest`.
+def findShortestPathLength(mat, src, dest):
+    row = [-1, 0, 0, 1]
+    col = [0, -1, 1, 0]
 
-# `min_dist` stores the length of the longest path from source to a destination
-# found so far, and `dist` maintains the length of the path from a source cell to
-# the current cell (i, j).
-
-def findShortestPath(matrix, visited, i, j, dest, min_dist=sys.maxsize, dist=0):
-    # if the destination is found, update `min_dist`
-    if (i, j) == dest:
-        return min(dist, min_dist)
-
-    # set (i, j) cell as visited
-    visited[i][j] = 1
-
-    # go to the bottom cell
-    if isSafe(matrix, visited, i + 1, j):
-        min_dist = findShortestPath(matrix, visited, i + 1, j, dest, min_dist, dist + 1)
-
-    # go to the right cell
-    if isSafe(matrix, visited, i, j + 1):
-        min_dist = findShortestPath(matrix, visited, i, j + 1, dest, min_dist, dist + 1)
-
-    # go to the top cell
-    if isSafe(matrix, visited, i - 1, j):
-        min_dist = findShortestPath(matrix, visited, i - 1, j, dest, min_dist, dist + 1)
-
-    # go to the left cell
-    if isSafe(matrix, visited, i, j - 1):
-        min_dist = findShortestPath(matrix, visited, i, j - 1, dest, min_dist, dist + 1)
-
-    # backtrack: remove (i, j) from the visited matrix
-    visited[i][j] = 0
-
-    return min_dist
-
-
-# Wrapper over findShortestPath() function
-def findShortestPathLength(matrix, dest):
-    global totalUnderFifty
     # get source cell (i, j)
-    i, j = 1, 1
+    i, j = src
 
     # get destination cell (x, y)
     x, y = dest
 
-    # base case
-    if not matrix or len(matrix) == 0 or matrix[i][j] == 0 or matrix[x][y] == 0:
+    print(f"(1, 1) -> {dest}")
+
+    # base case: invalid input
+    if not mat or len(mat) == 0 or mat[i][j] == 0 or mat[x][y] == 0:
         return -1
 
     # `M × N` matrix
-    (M, N) = (len(matrix), len(matrix[0]))
+    (M, N) = (len(mat), len(mat[0]))
 
-    # construct an `M × N` matrix to keep track of visited cells
-    visited = [[False for _ in range(N)] for _ in range(M)]
+    # construct a matrix to keep track of visited cells
+    visited = [[False for x in range(N)] for y in range(M)]
 
-    min_dist = findShortestPath(matrix, visited, i, j, dest)
+    # create an empty queue
+    q = deque()
 
-    if min_dist < 50 and min_dist != -1:
-        totalUnderFifty += 1
+    # mark the source cell as visited and enqueue the source node
+    visited[i][j] = True
+
+    # (i, j, dist) represents matrix cell coordinates, and their
+    # minimum distance from the source
+    q.append((i, j, 0))
+
+    # stores length of the longest path from source to destination
+    min_dist = sys.maxsize
+
+    # loop till queue is empty
+    while q:
+
+        # dequeue front node and process it
+        (i, j, dist) = q.popleft()
+
+        # (i, j) represents a current cell, and `dist` stores its
+        # minimum distance from the source
+
+        # if the destination is found, update `min_dist` and stop
+        if i == x and j == y:
+            min_dist = dist
+            break
+
+        # check for all four possible movements from the current cell
+        # and enqueue each valid movement
+        for k in range(4):
+            # check if it is possible to go to position
+            # (i + row[k], j + col[k]) from current position
+            if isValid(mat, visited, i + row[k], j + col[k]):
+                # mark next cell as visited and enqueue it
+                visited[i + row[k]][j + col[k]] = True
+                q.append((i + row[k], j + col[k], dist + 1))
 
     if min_dist != sys.maxsize:
         return min_dist
