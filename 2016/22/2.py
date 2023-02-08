@@ -7,10 +7,17 @@ import re
 
 class Node:
     def __init__(self, x, y, used, avail):
-        self.x = -1
-        self.y = -1
-        self.used = -1
-        self.avail = -1
+        self.x = x
+        self.y = y
+        self.used = used
+        self.avail = avail
+
+    def __str__(self):
+        if self.used > 400:
+            return "##/##"
+        if self.used == 0:
+            return f"__/{self.avail}"
+        return f"{self.used}/{self.avail}"
 
 
 def main():
@@ -32,26 +39,10 @@ def main():
         used, avail = int(sizes[1][:-1]), int(sizes[2][:-1])
         matrix[y][x] = Node(x, y, used, avail)
 
-    total = 0
     for row in matrix:
         for n in row:
-            total += checkNode(n, matrix)
-
-    print(total)
-
-
-def checkNode(node: Node, matrix) -> int:
-    total = 0
-    if node.used == 0:
-        return 0
-
-    for row in matrix:
-        for n in row:
-            if node != n:
-                if n.avail >= node.used:
-                    total += 1
-
-    return total
+            print(n, end=' ')
+        print()  # This just pretty-prints the input. Solved it by hand. Weird problem
 
 
 starttime = time.time()
