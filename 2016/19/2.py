@@ -1,43 +1,67 @@
 import time
+from datetime import timedelta
 import aocd
 import os
 from collections import deque
 
 
-class Elf:
-    def __init__(self, number: int):
-        self.number = number
-        self.presents = 1
+class Node:
+    def __init__(self, num):
+        self.num = num
+        self.prev = None
+        self.next = None
 
-    def getPresents(self) -> int:
-        return self.presents
+
+class LinkedList:
+    def __init__(self, headNode):
+        self.head = headNode
+
+    def addNode(self, node):
+        n = self.head
+        if n.next is None:
+            n.next = node
+            n.prev = node
+            node.next = n
+            node.prev = n
+        else:
+            n = n.prev
+            n.next = node
+            node.prev = n
+            node.next = self.head
+            self.head.prev = node
 
 
 def main():
     cwd = os.getcwd().split('\\')
-    data = aocd.get_data(None, int(cwd[-1]), int(cwd[-2]))
-    # print(data)
-
-    elves = deque()
+    numElves = aocd.get_data(None, int(cwd[-1]), int(cwd[-2]))
 
     testing = False
-    numElves = 5 if testing else int(data)
+    numElves = 5 if testing else int(numElves)
 
-    [elves.append(Elf(i)) for i in range(numElves)]
+    linkedList = LinkedList(Node(1))
+    for i in range(2, numElves + 1):
+        linkedList.addNode(Node(i))
 
-    while len(elves) > 1:
-        if len(elves) % 1000 == 0:
-            print(f"{len(elves)} -- {time.strftime('%I:%M:%S', time.localtime())}")
-        elf = elves.popleft()
-        if elf.getPresents() != 0:
-            targetIndex = (len(elves) - 1) // 2
-            target = elves[targetIndex]
-            elf.presents += target.getPresents()
-            # print(f"Elf {elf.number + 1} takes Elf {target.number + 1}'s {target.getPresents()} presents.")
-            elves.remove(target)
-            elves.append(elf)
+    elf = linkedList.head
+    target = elf
+    for _ in range(numElves // 2):
+        target = target.next
 
-    print(elves[0].number + 1)
+    moveTwo = False
+
+    while elf.next != elf:
+        p = target.prev
+        n = target.next
+        p.next = n
+        n.prev = p
+
+        elf = elf.next
+        target = target.next
+        if moveTwo:
+            target = target.next
+        moveTwo = not moveTwo
+
+    print(elf.num)
 
 
 starttime = time.time()
