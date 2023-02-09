@@ -4,13 +4,29 @@ import os
 
 
 def main():
-    cwd = os.getcwd().split('\\')
-    data = aocd.get_data(None, int(cwd[-1]), int(cwd[-2]))
-    data = data.split('\n')
-    for d in data:
-        print(d.split(','))
+    numItemsPerFloor = [4, 2, 4, 0]
+    print(getMoves(numItemsPerFloor))
 
-    # I don't understand, this puzzle seems like ass
+
+def getMoves(items):
+    """
+    I found this on Reddit in the comments -- https://tinyurl.com/5dd2jp3k
+    First explanation of the problem that made any damn sense on how to solve
+
+    To move n items up 1 floor, it requires 2 * (n - 1) - 1 moves
+
+    So assuming a "good" start state, it doesn't matter what is on what floor
+    Just the number of things per floor
+    """
+    moves = 0
+    while items[-1] != sum(items):
+        lowestFloor = 0
+        while items[lowestFloor] == 0:
+            lowestFloor += 1
+        moves += 2 * (items[lowestFloor] - 1) - 1
+        items[lowestFloor + 1] += items[lowestFloor]
+        items[lowestFloor] = 0
+    return moves
 
 
 starttime = time.time()
