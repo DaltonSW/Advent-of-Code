@@ -60,7 +60,6 @@ def hashNumbers(numbers, lengths, currentPosition, skipSize, listLength) -> ([in
 
         currentPosition += (skipSize + l) % listLength
         skipSize += 1
-        # print(numbers)
 
     return numbers, currentPosition % listLength, skipSize
 
