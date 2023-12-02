@@ -12,7 +12,6 @@ try:
     shutil.copy('./basefile.py', '{}/2.py'.format(path))
     os.chdir(path)
 
-
 except:
     print("Error!")
     print(traceback.format_exc())
