@@ -1,6 +1,7 @@
 import time
 import aocd
 import os
+import re
 
 
 def main():
